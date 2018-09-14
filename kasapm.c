@@ -6,6 +6,13 @@ void versionKernel();
 void filtrarCadena(char* directorio, char* busqueda, char* filtrada);
 void cpuInfo();
 void infoMemoria();
+void tiempo();
+void print_time (char* label, long time);
+void tiempoCPU();
+void pedidosLE();
+void cambiosContexto();
+void procesosCreados();
+void cantidadFicheros();
 
 int main(int argc, char const *argv[])
 {
@@ -13,6 +20,12 @@ int main(int argc, char const *argv[])
 	cpuInfo();
 	versionKernel();
 	infoMemoria();
+	tiempo();
+	tiempoCPU();
+	pedidosLE();
+	cambiosContexto();
+	procesosCreados();
+	cantidadFicheros();
 
 	return 0;
 }
@@ -29,7 +42,8 @@ void versionKernel(){
 	printf("\nVersion del kernel: ");
 
 	fscanf(archivo,"%s %s %s", str1,str2,str3);
-printf("%s %s %s \n",str1,str2,str3 );
+	printf("%s %s %s \n",str1,str2,str3 );
+	return;
 } 
 
 /**
@@ -87,10 +101,116 @@ void infoMemoria(){
 
 	filtrarCadena("/proc/meminfo","MemTotal", linea);
 	sscanf(linea, "MemTotal: %d %s",&memTotal,str);
-	printf("\nMemoria Total: %d %s\n",memTotal,str );
+	printf("\n\nMemoria Total: %d %s\n",memTotal,str );
 
 	filtrarCadena("/proc/meminfo","MemFree", linea);
 	sscanf(linea, "MemFree: %d %s",&memLibre,str);
 	printf("Memoria Libre: %d %s\n",memLibre,str );
 	return;
+}
+
+void tiempo(){
+	FILE* archivo;
+	double uptime;
+
+	archivo = fopen ("/proc/uptime","r");
+	fscanf(archivo, "%lf \n",&uptime);
+	fclose (archivo);
+
+	printf("\n\n");
+	print_time ("Tiempo activo: ",(long) uptime);
+
+	return;
+}
+
+void print_time (char* label, long time)
+{
+	const long minute = 60;
+	const long hour = minute*60;
+	const long day = hour*24;
+
+	printf ("%s: %ld days, %ld:%02ld:%02ld\n", label, time / day, (time % day) / hour, (time % hour) / minute, time % minute);
+	return;
+}
+
+void tiempoCPU(){
+	FILE* archivo;
+	float usuario, sistema, sinuso;
+
+	archivo = fopen ("/proc/stat","r");
+	fscanf(archivo, "cpu %f %f %*f %f \n",&usuario, &sistema, &sinuso);
+	
+
+	printf("\n\n");
+	print_time ("Tiempo usuario: ",(long) usuario);
+	print_time ("Tiempo sistema: ",(long) sistema);
+	print_time ("Tiempo sin uso: ",(long) sinuso);
+
+	fclose (archivo);
+	return;
+}
+
+void pedidosLE(){
+	char linea[250];
+	unsigned int lecturas, escrituras, total;
+
+	filtrarCadena("/proc/diskstats","sda", linea);
+	sscanf(linea,"sda %u",&lecturas);
+	sscanf(linea,"sda %*u %*u %*u %*u %u",&escrituras);
+	total=lecturas+escrituras;
+
+	printf("\n\nCantidad de pedidos de lectura/escritura al disco: %u\n",total);
+	return;
+	
+}
+
+void cambiosContexto(){
+	char linea[250];
+	unsigned int cambios;
+
+	filtrarCadena("/proc/stat","ctxt", linea);
+	sscanf(linea,"ctxt %u",&cambios);
+
+	printf("\n\nCambios de contexto: %u\n",cambios);
+	return;
+	
+}
+
+void procesosCreados(){
+	char linea[250];
+	unsigned int procesos;
+
+	filtrarCadena("/proc/stat","processes", linea);
+	sscanf(linea,"processes %u",&procesos);
+
+	printf("\n\nProcesos creados desde el inicio del sistema operativo: %u\n",procesos);
+	return;
+	
+}
+
+void cantidadFicheros(){
+	FILE* archivo;
+	char *lectura=NULL;
+	char buffer[250];
+	int contador;
+
+	archivo = fopen ("/proc/filesystems","r");
+
+	while (feof(archivo)==0){
+		fgets(buffer,250,archivo);
+		lectura=strstr(buffer,"\n");//compara la cadena del archivo		
+										//que toma fgtes y nuestro parametro de busqueda
+		if(lectura!="\n"){				//si hay coincidencia, lo guarda
+			contador++;	//copia lo obtenido en la cadena que								//le manda la funcion como parametro
+		}
+	}
+
+	fclose(archivo);
+
+	contador=contador-1;
+
+	printf("\n\nCantidad de sistemas de archivo soportados por el kernel: %d \n",contador);
+	
+	return;
+
 }
