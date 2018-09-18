@@ -96,6 +96,7 @@ void versionKernel(){
 
 	fscanf(archivo,"%s %s %s", str1,str2,str3);
 	printf("%s %s %s \n",str1,str2,str3 );
+	fclose(archivo);
 	return;
 } 
 
@@ -255,7 +256,6 @@ void cantidadFicheros(){
 										//que toma fgtes y nuestro parametro de busqueda
 		if(lectura!=NULL){				//si hay coincidencia, lo guarda
 			contador++;	//copia lo obtenido en la cadena que								//le manda la funcion como parametro
-		
 		   
 	}
 
