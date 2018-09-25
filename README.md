@@ -48,6 +48,4 @@ Si ejecuta el comando `$./ksamp -l N1 N2` siendo N1 el timepo de espera y N2 el 
 	-Cantidad de memoria disponible.
 	-Lista de los promedios de carga de 1 minuto.
 
-El repositorio de git : https://github.com/martintarres/SOI
-
 
