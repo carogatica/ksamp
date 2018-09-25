@@ -1,4 +1,9 @@
 ﻿# Trabajo Practico Numero 1 - Sistemas Operativos I  
+ 
+# Grupo:
+
+Gatica Rodriguez, Carolina   
+Miglierini, Carlos
 
 ## Información importante
 
